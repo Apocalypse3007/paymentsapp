@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken")
 const {User} = require("../db")
 const {JWT_SECRET} = require("../config")
 const router = express.Router();
+const {authmiddleware} = require("../middleware")
 
 const signupBody = zod.object({
     username : zod.string(),
@@ -79,6 +80,42 @@ router.post("/signin", async(req,res)=>{
         })
     }
     
+});
+
+
+const updateBody = zod.object({
+    password:zod.string().optional(),
+    firstname:zod.string().optional(),
+    lastname:zod.string().optional(),
 })
+
+
+router.put("/",authmiddleware,async(req,res)=>{
+    const success = updateBody.safeParse(req.body)
+    if(!success){
+        res.status(411).json({
+            msg:"Error while updating"
+        })
+    }
+
+    await User.updateOne({_id:req.userID},req.body);
+
+    res.json({
+        msg : "Update Successful"
+    })
+});
+
+
+router.get("/bulk", async(req,res)=> {
+    const filter = req.query.filter;
+    const regex = new RegExp(filter, 'i'); 
+
+    const users = await User.find({
+        firstName: regex,
+        lastname: regex
+    });
+
+    res.json(users);
+});
 
 module.exports = router;
