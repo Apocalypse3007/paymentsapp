@@ -1,5 +1,5 @@
 const mongoose = require("mongoose")
-mongoose.connect("mongodb+srv://admin:ILUWcr3K9UrQGl8s@cluster0.q8kzhuy.mongodb.net/paymentsapp");
+mongoose.connect("add ur own url");
 
 const userSchema = new mongoose.Schema({
     username: {
